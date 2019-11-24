@@ -1,4 +1,8 @@
 package com.mercado.mineiro.administration.bill.recurrence;
 
-public class RecurrenceType {
+public enum  RecurrenceType {
+    MONTHLY,
+    YEARLY,
+    DAILY,
+    WEEKLY
 }
