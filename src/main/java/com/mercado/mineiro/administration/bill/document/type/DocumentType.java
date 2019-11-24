@@ -1,4 +1,4 @@
-package com.mercado.mineiro.administration.bill.document;
+package com.mercado.mineiro.administration.bill.document.type;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
