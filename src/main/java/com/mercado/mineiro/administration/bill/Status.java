@@ -4,5 +4,6 @@ public enum Status {
     PAYABLE,
     OVERDUE,
     PAID,
-    CANCELLED
+    CANCELLED,
+    TO_PAY_TODAY
 }

@@ -19,12 +19,14 @@ public class Document {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
-    private long id;
+    private Long id;
     private String code;
     @ManyToOne(optional = false)
     @NonNull
     private DocumentType type;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 
+    public Document(String code, @NonNull DocumentType type) {
+        this.code = code;
+        this.type = type;
+    }
 }

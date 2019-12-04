@@ -18,11 +18,15 @@ public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
-    private long id;
+    private Long id;
 
     @NonNull
     private String Name;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    public Category(@NonNull Long id, @NonNull String name) {
+        this.id = id;
+        Name = name;
+    }
 }

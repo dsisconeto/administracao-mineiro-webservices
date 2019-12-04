@@ -17,7 +17,12 @@ public class DocumentType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
-    private long id;
+    private Long id;
     @NonNull
     private String name;
+
+    public DocumentType(@NonNull long id, @NonNull String name) {
+        this.id = id;
+        this.name = name;
+    }
 }

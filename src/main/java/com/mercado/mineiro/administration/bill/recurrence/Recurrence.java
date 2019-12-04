@@ -16,7 +16,7 @@ public class Recurrence {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
-    private long id;
+    private Long id;
     private int quantity;
     @Enumerated(EnumType.STRING)
     private RecurrenceType type;

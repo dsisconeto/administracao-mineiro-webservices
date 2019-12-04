@@ -20,7 +20,7 @@ public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
-    private long id;
+    private Long id;
     private BigDecimal amount;
     private LocalDate paidAt;
     @OneToOne(mappedBy = "payment")
