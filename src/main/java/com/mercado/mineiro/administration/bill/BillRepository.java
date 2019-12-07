@@ -4,7 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 @Service
-public interface IBillRepository extends JpaRepository<Bill, Long> {
-
+public interface BillRepository extends JpaRepository<Bill, Long> {
 
 }

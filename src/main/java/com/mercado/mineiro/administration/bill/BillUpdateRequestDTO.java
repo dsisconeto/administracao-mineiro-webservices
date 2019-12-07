@@ -1,18 +1,31 @@
 package com.mercado.mineiro.administration.bill;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
-class BillRequestUpdateForTest extends BillRequestStoreForTest implements IBillUpdateRequest {
+@NoArgsConstructor
+public class BillUpdateRequestDTO {
+
+    @NonNull
     private Long billId;
+    @NotNull
+    @Length(max = 100, min = 5)
     private String description;
+    @NotNull
+    @DecimalMin("1.00")
     private BigDecimal amount;
+    @NotNull
     private LocalDate payIn;
+    @NotNull
     private Long categoryId;
     private Long supplierId;
     private String documentCode;

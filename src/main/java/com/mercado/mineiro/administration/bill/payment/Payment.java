@@ -1,11 +1,9 @@
 package com.mercado.mineiro.administration.bill.payment;
 
 import com.mercado.mineiro.administration.bill.Bill;
-import com.mercado.mineiro.administration.bill.category.Category;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-
 
 import javax.persistence.*;
 import java.math.BigDecimal;

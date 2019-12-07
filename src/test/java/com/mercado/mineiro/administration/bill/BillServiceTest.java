@@ -2,16 +2,18 @@ package com.mercado.mineiro.administration.bill;
 
 import com.mercado.mineiro.administration.bill.category.Category;
 import com.mercado.mineiro.administration.bill.category.CategoryNotFoundException;
-import com.mercado.mineiro.administration.bill.category.ICategoryService;
-import com.mercado.mineiro.administration.bill.document.type.DocumentType;
-import com.mercado.mineiro.administration.bill.document.type.IDocumentTypeRepository;
+import com.mercado.mineiro.administration.bill.category.CategoryService;
 
+import com.mercado.mineiro.administration.bill.document.type.DocumentTypeService;
 import com.mercado.mineiro.administration.common.DomainException;
-import com.mercado.mineiro.administration.supplier.ISupplierRepository;
-import com.mercado.mineiro.administration.supplier.Supplier;
+import com.mercado.mineiro.administration.supplier.SupplierService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import org.mockito.Mockito;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -19,30 +21,35 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
+@SpringBootTest
 class BillServiceTest {
 
-    private ICategoryService categoryService;
-    private IBillRepository billRepository;
-    private IDocumentTypeRepository documentTypeRepository;
-    private ISupplierRepository supplierRepository;
-    private BillService billService;
+    private CategoryService categoryService;
+    private BillRepository billRepository;
+    private BillServiceImp billService;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     @BeforeEach
     void setUp() {
-        categoryService = Mockito.mock(ICategoryService.class);
-        billRepository = Mockito.mock(IBillRepository.class);
-        documentTypeRepository = Mockito.mock(IDocumentTypeRepository.class);
-        supplierRepository = Mockito.mock(ISupplierRepository.class);
-        billService = new BillService(billRepository, categoryService, documentTypeRepository, supplierRepository);
+        categoryService = Mockito.mock(CategoryService.class);
+        billRepository = Mockito.mock(BillRepository.class);
+        DocumentTypeService documentTypeService = Mockito.mock(DocumentTypeService.class);
+        SupplierService supplierService = Mockito.mock(SupplierService.class);
+        billService = new BillServiceImp(
+                billRepository,
+                categoryService,
+                supplierService,
+                documentTypeService,
+                modelMapper
+        );
     }
 
     @Test
-    void should_store_bill() throws CategoryNotFoundException {
+    void should_create_one_bill() throws CategoryNotFoundException {
 
-        var request = new BillRequestStoreForTest();
-
-
+        var request = new BillCreateRequestDTO();
         request.setAmount(BigDecimal.valueOf(10));
         request.setDescription("Conta de água");
         request.setPayIn(LocalDate.now());
@@ -55,14 +62,8 @@ class BillServiceTest {
         Mockito.when(categoryService.getByIdOrFail(request.getCategoryId()))
                 .thenReturn(new Category(request.getCategoryId(), "Categoria"));
 
-        Mockito.when(supplierRepository.findById(request.getCategoryId()))
-                .thenReturn(Optional.of(new Supplier(request.getSupplierId(), "Fornecedor")));
 
-
-        Mockito.when(documentTypeRepository.findById(request.getCategoryId()))
-                .thenReturn(Optional.of(new DocumentType(request.getDocumentTypeId(), "Boleto")));
-
-        var bill = billService.store(request);
+        var bill = billService.create(request);
         Mockito.verify(billRepository).save(bill);
 
         assertEquals(request.getDescription(), bill.getDescription());
@@ -80,7 +81,7 @@ class BillServiceTest {
     @Test
     void should_update_bill() throws DomainException {
 
-        var request = new BillRequestUpdateForTest();
+        var request = new BillUpdateRequestDTO();
 
 
         request.setBillId(1L);
@@ -95,13 +96,6 @@ class BillServiceTest {
 
         Mockito.when(categoryService.getByIdOrFail(request.getCategoryId()))
                 .thenReturn(new Category(request.getCategoryId(), "Categoria"));
-
-        Mockito.when(supplierRepository.findById(request.getCategoryId()))
-                .thenReturn(Optional.of(new Supplier(request.getSupplierId(), "Fornecedor")));
-
-
-        Mockito.when(documentTypeRepository.findById(request.getCategoryId()))
-                .thenReturn(Optional.of(new DocumentType(request.getDocumentTypeId(), "Boleto")));
 
 
         Mockito.when(billRepository.findById(request.getBillId())).thenReturn(Optional.of(new Bill()));

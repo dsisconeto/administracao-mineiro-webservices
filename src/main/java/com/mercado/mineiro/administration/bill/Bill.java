@@ -5,63 +5,58 @@ import com.mercado.mineiro.administration.bill.document.Document;
 import com.mercado.mineiro.administration.bill.payment.Payment;
 import com.mercado.mineiro.administration.common.DomainException;
 import com.mercado.mineiro.administration.supplier.Supplier;
-import lombok.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@Data
 @Entity
 @NoArgsConstructor
 @Table(name = "bills")
+
 public class Bill {
 
     @Id
-    @Getter
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @EqualsAndHashCode.Include
     private Long id;
+
     @NonNull
-    @Getter
-    @Setter
     private String description;
+
     @NonNull
-    @Getter
     private BigDecimal amount;
+
     @NonNull
-    @Getter
     private LocalDate payIn;
+
     @NonNull
     @Enumerated(EnumType.STRING)
-    @Getter
     private Status status = Status.PAYABLE;
+
     @ManyToOne(optional = false)
     @NonNull
-    @Getter
-    @Setter
     private Category category;
+
     @ManyToOne
-    @Getter
-    @Setter
     private Supplier supplier;
 
     @OneToOne
     @JoinColumn(unique = true)
-    @Getter
     private Payment payment;
-    @Getter
-    private BigDecimal interest;
-    @OneToOne
-    @Getter
-    @Setter
-    private Document document;
-    @Getter
-    private LocalDateTime createdAt = LocalDateTime.now();
-    @Getter
-    @Setter
-    private LocalDateTime updatedAt;
 
+    private BigDecimal interest;
+
+    @OneToOne(cascade = CascadeType.PERSIST)
+    private Document document;
+
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    private LocalDateTime updatedAt;
 
     Bill(@NonNull String description,
          @NonNull BigDecimal amount,
@@ -72,9 +67,8 @@ public class Bill {
         this.description = description;
         this.amount = amount;
         this.category = category;
-        this.payIn = payIn;
+        this.setPayIn(payIn);
 
-        this.verifyPayIn();
     }
 
 
@@ -96,23 +90,8 @@ public class Bill {
         this.status = Status.CANCELLED;
     }
 
-    private void verifyPayIn() {
 
-        if (isStatusPaid() || isStatusCanceled()) return;
-
-        var now = LocalDate.now();
-
-        if (payIn.isBefore(now)) {
-            this.status = Status.OVERDUE;
-            return;
-        }
-
-        if (payIn.isEqual(now)) {
-            this.status = Status.TO_PAY_TODAY;
-        }
-    }
-
-    void setAmount(BigDecimal amount) throws DomainException {
+    public void setAmount(BigDecimal amount) throws DomainException {
 
         if (this.isStatusPaid()) {
             throw new DomainException("Amount não pode ser alterado se o status for paid");
@@ -121,13 +100,29 @@ public class Bill {
         this.amount = amount;
     }
 
-    void setPayIn(@NonNull LocalDate payIn) throws DomainException {
+    public void setPayIn(@NonNull LocalDate payIn) throws DomainException {
 
-        if (isStatusPaid()) {
-            throw new DomainException("PayIn não pode ser alterado se o status for paid");
+        if (isStatusPaid() || isStatusCanceled()) {
+            throw new DomainException(
+                    "A data do pagamento não pode ser alterada se a conta já estiver paga ou cancelada"
+            );
         }
 
+        var now = LocalDate.now();
+
         this.payIn = payIn;
+
+        if (payIn.isBefore(now)) {
+            this.status = Status.OVERDUE;
+            return;
+        }
+
+        if (payIn.isEqual(now)) {
+            this.status = Status.TO_PAY_TODAY;
+            return;
+        }
+
+        this.status = Status.PAYABLE;
     }
 
 

@@ -5,13 +5,12 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
-
 import javax.persistence.*;
 
 @Entity
 @Data
 @NoArgsConstructor
-@Table(name = "bill_documents")
+@Table(name = "bill_document_types")
 public class DocumentType {
 
     @Id

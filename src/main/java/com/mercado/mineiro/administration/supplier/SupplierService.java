@@ -1,22 +1,13 @@
 package com.mercado.mineiro.administration.supplier;
 
 import lombok.NonNull;
-import org.springframework.stereotype.Service;
-
-@Service
-public class SupplierService implements ISupplierService {
 
 
-    private ISupplierRepository _supplierRepository;
+public interface SupplierService {
 
-    SupplierService(ISupplierRepository supplierRepository) {
-        _supplierRepository = supplierRepository;
-    }
+    @NonNull
+    Supplier getByIdOrFail(Long supplierId) throws SupplierNotFoundException;
 
 
-    @Override
-    public @NonNull Supplier getByIdOrFail(Long supplierId) throws SupplierNotFoundException {
-        return _supplierRepository.findById(supplierId)
-                .orElseThrow(SupplierNotFoundException::new);
-    }
+    void existsByIdOrFail(Long supplierId) throws SupplierNotFoundException;
 }

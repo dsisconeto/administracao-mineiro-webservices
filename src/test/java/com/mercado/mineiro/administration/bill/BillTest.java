@@ -7,11 +7,22 @@ import com.mercado.mineiro.administration.common.DomainException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import lombok.NonNull;
 import org.junit.jupiter.api.Test;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 
+
+@SpringBootTest
 class BillTest {
+
+    @Autowired
+    private ModelMapper modelMapper;
 
 
     @Test
@@ -105,4 +116,83 @@ class BillTest {
     }
 
 
+    @Test
+    void mapper() {
+
+
+        var dto = new BillCreateRequestDTO();
+
+        dto.setAmount(BigDecimal.valueOf(10L));
+        dto.setDescription("Olá mundo");
+        dto.setPayIn(LocalDate.now().plusDays(1));
+        dto.setCategoryId(1L);
+        dto.setSupplierId(1L);
+        dto.setDocumentCode("123465");
+        dto.setDocumentTypeId(1L);
+
+
+        var bill = modelMapper.map(dto, Bill.class);
+
+        assertEquals(dto.getAmount(), bill.getAmount());
+        assertEquals(dto.getDescription(), bill.getDescription());
+        assertEquals(dto.getPayIn(), bill.getPayIn());
+        assertEquals(dto.getCategoryId(), bill.getCategory().getId());
+        assertEquals(dto.getSupplierId(), bill.getSupplier().getId());
+        assertEquals(dto.getDocumentCode(), bill.getDocument().getCode());
+        assertEquals(dto.getDocumentTypeId(), bill.getDocument().getType().getId());
+
+    }
+
+    @Test
+    void document_is_null() {
+
+
+        var dto = new BillCreateRequestDTO();
+
+        dto.setAmount(BigDecimal.valueOf(10L));
+        dto.setDescription("Olá mundo");
+        dto.setPayIn(LocalDate.now().plusDays(1));
+        dto.setCategoryId(1L);
+        dto.setSupplierId(1L);
+
+
+        var bill = modelMapper.map(dto, Bill.class);
+
+        assertEquals(dto.getAmount(), bill.getAmount());
+        assertEquals(dto.getDescription(), bill.getDescription());
+        assertEquals(dto.getPayIn(), bill.getPayIn());
+        assertEquals(dto.getCategoryId(), bill.getCategory().getId());
+        assertEquals(dto.getSupplierId(), bill.getSupplier().getId());
+        assertNull(bill.getDocument());
+
+
+    }
+
+
+    @Test
+    void mapper_update() {
+
+
+        var bill = new Bill(
+                "Olá mundo",
+                BigDecimal.valueOf(50),
+                new Category(1L, "Padrão"),
+                LocalDate.now()
+        );
+
+
+        var dto = new BillUpdateRequestDTO();
+
+        dto.setAmount(BigDecimal.valueOf(10L));
+        dto.setDescription("Olá mundo 2");
+        dto.setPayIn(LocalDate.now());
+
+        modelMapper.map(dto, bill);
+
+        assertEquals(dto.getAmount(), bill.getAmount());
+        assertEquals(dto.getDescription(), bill.getDescription());
+        assertEquals(LocalDate.now(), bill.getPayIn());
+
+
+    }
 }
