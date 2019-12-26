@@ -5,7 +5,7 @@ import com.mercado.mineiro.administration.bill.category.CategoryNotFoundExceptio
 import com.mercado.mineiro.administration.bill.category.CategoryService;
 
 import com.mercado.mineiro.administration.bill.document.type.DocumentTypeService;
-import com.mercado.mineiro.administration.common.DomainException;
+import com.mercado.mineiro.administration.common.exception.DomainException;
 import com.mercado.mineiro.administration.supplier.SupplierService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -113,5 +113,7 @@ class BillServiceTest {
         assertEquals(request.getDocumentCode(), bill.getDocument().getCode());
         assertEquals(request.getDocumentTypeId(), bill.getDocument().getType().getId());
     }
+
+
 
 }

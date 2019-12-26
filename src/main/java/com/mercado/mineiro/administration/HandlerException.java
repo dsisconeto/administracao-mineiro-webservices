@@ -1,8 +1,8 @@
 package com.mercado.mineiro.administration;
 
-import com.mercado.mineiro.administration.common.DomainException;
-import com.mercado.mineiro.administration.common.EntityNotFoundException;
-import com.mercado.mineiro.administration.common.web.ResponseFactory;
+import com.mercado.mineiro.administration.common.exception.DomainException;
+import com.mercado.mineiro.administration.common.exception.EntityNotFoundException;
+import com.mercado.mineiro.administration.common.web.Responses;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,20 +16,15 @@ import java.util.LinkedHashMap;
 
 @ControllerAdvice
 public class HandlerException extends ResponseEntityExceptionHandler {
-    private ResponseFactory responseFactory;
-
-    public HandlerException(ResponseFactory responseFactory) {
-        this.responseFactory = responseFactory;
-    }
 
     @ExceptionHandler(value = DomainException.class)
     protected ResponseEntity<Object> handleDomainException(DomainException e, WebRequest request) {
-        return responseFactory.unprocessableEntity(e);
+        return Responses.unprocessableEntity(e);
     }
 
     @ExceptionHandler(value = EntityNotFoundException.class)
     protected ResponseEntity<Object> handleEntityNotFoundException(EntityNotFoundException e, WebRequest request) {
-        return responseFactory.notFound();
+        return Responses.notFound();
     }
 
     @Override
@@ -47,6 +42,6 @@ public class HandlerException extends ResponseEntityExceptionHandler {
                 });
 
 
-        return responseFactory.unprocessableEntity("Dados inválidos", errors);
+        return Responses.unprocessableEntity("Dados inválidos", errors);
     }
 }

@@ -1,32 +1,24 @@
 package com.mercado.mineiro.administration.bill.category;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+
+import com.mercado.mineiro.administration.common.base.EntityBase;
+import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 
 @Entity
 @Data
 @NoArgsConstructor
-@Table(name = "categories")
-public class Category {
+@EqualsAndHashCode(callSuper = true)
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @EqualsAndHashCode.Include
-    private Long id;
+public class Category extends EntityBase {
 
     @NonNull
-    private String Name;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private String name;
 
-    public Category(@NonNull Long id, @NonNull String name) {
-        this.id = id;
-        Name = name;
+    public Category(Long id, String name) {
+        setId(id);
+        this.name = name;
     }
 }

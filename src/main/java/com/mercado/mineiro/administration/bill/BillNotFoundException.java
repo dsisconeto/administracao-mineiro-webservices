@@ -1,6 +1,6 @@
 package com.mercado.mineiro.administration.bill;
 
-import com.mercado.mineiro.administration.common.EntityNotFoundException;
+import com.mercado.mineiro.administration.common.exception.EntityNotFoundException;
 
 class BillNotFoundException extends EntityNotFoundException {
     BillNotFoundException() {

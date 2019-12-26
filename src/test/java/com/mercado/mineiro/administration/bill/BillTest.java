@@ -2,17 +2,15 @@ package com.mercado.mineiro.administration.bill;
 
 import com.mercado.mineiro.administration.bill.category.Category;
 import com.mercado.mineiro.administration.bill.payment.Payment;
-import com.mercado.mineiro.administration.common.DomainException;
+import com.mercado.mineiro.administration.common.exception.DomainException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import lombok.NonNull;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,8 +23,9 @@ class BillTest {
     private ModelMapper modelMapper;
 
 
+
     @Test
-    void pay() throws DomainException {
+    void pay() {
 
         var bill = new Bill(
                 "Gás",

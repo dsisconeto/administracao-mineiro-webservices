@@ -3,27 +3,31 @@ package com.mercado.mineiro.administration.bill;
 import com.mercado.mineiro.administration.bill.category.Category;
 import com.mercado.mineiro.administration.bill.document.Document;
 import com.mercado.mineiro.administration.bill.payment.Payment;
-import com.mercado.mineiro.administration.common.DomainException;
+import com.mercado.mineiro.administration.common.base.DomainEvent;
+import com.mercado.mineiro.administration.common.exception.DomainException;
+import com.mercado.mineiro.administration.common.base.EntityBase;
 import com.mercado.mineiro.administration.supplier.Supplier;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.data.domain.AfterDomainEventPublication;
+import org.springframework.data.domain.DomainEvents;
 
 import javax.persistence.*;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+
 
 @Data
 @Entity
 @NoArgsConstructor
-@Table(name = "bills")
+@EqualsAndHashCode(callSuper = true)
+public class Bill extends EntityBase {
 
-public class Bill {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     @NonNull
     private String description;
@@ -36,6 +40,7 @@ public class Bill {
 
     @NonNull
     @Enumerated(EnumType.STRING)
+    @Setter(AccessLevel.NONE)
     private Status status = Status.PAYABLE;
 
     @ManyToOne(optional = false)
@@ -55,13 +60,17 @@ public class Bill {
     private Document document;
 
     private LocalDateTime createdAt = LocalDateTime.now();
-
     private LocalDateTime updatedAt;
 
-    Bill(@NonNull String description,
-         @NonNull BigDecimal amount,
-         @NonNull Category category,
-         @NonNull LocalDate payIn
+    @Transient
+    @Setter(AccessLevel.NONE)
+    private Collection<Object> events = new ArrayList<>();
+
+
+    public Bill(@NonNull String description,
+                @NonNull BigDecimal amount,
+                @NonNull Category category,
+                @NonNull LocalDate payIn
     ) {
 
         this.description = description;
@@ -83,7 +92,7 @@ public class Bill {
 
         this.payment = payment;
         this.interest = payment.getAmount().subtract(this.getAmount());
-        this.status = Status.PAID;
+        changeStatus(Status.PAID);
     }
 
     void cancel() {
@@ -113,16 +122,16 @@ public class Bill {
         this.payIn = payIn;
 
         if (payIn.isBefore(now)) {
-            this.status = Status.OVERDUE;
+            changeStatus(Status.OVERDUE);
             return;
         }
 
         if (payIn.isEqual(now)) {
-            this.status = Status.TO_PAY_TODAY;
+            changeStatus(Status.TO_PAY_TODAY);
             return;
         }
 
-        this.status = Status.PAYABLE;
+        this.changeStatus(Status.PAYABLE);
     }
 
 
@@ -145,5 +154,16 @@ public class Bill {
     public boolean isStatusPayable() {
         return status == Status.PAYABLE;
     }
+
+    private void changeStatus(Status status) {
+        events.add(new BillChangeStatusEvent(this, this.status));
+        this.status = status;
+    }
+
+    @DomainEvents
+    public Collection<Object> getEvents() {
+        return Collections.unmodifiableCollection(events);
+    }
+
 
 }

@@ -1,7 +1,7 @@
 package com.mercado.mineiro.administration.bill.category;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.mercado.mineiro.administration.common.data.Repository;
 
-public interface CategoryRepository extends JpaRepository<Category, Long> {
+public interface CategoryRepository extends Repository<Category> {
 
 }

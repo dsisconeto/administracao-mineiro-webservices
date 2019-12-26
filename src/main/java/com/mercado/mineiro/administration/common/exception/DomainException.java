@@ -1,4 +1,4 @@
-package com.mercado.mineiro.administration.common;
+package com.mercado.mineiro.administration.common.exception;
 
 public class DomainException extends RuntimeException {
 

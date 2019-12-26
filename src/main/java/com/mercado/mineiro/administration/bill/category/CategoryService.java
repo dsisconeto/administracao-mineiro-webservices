@@ -1,10 +1,20 @@
 package com.mercado.mineiro.administration.bill.category;
 
-import com.mercado.mineiro.administration.common.DomainException;
+import com.mercado.mineiro.administration.common.exception.DomainException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface CategoryService {
 
-    Category getByIdOrFail(long categoryId) throws CategoryNotFoundException;
+    Category create(CategoryFormRequest request);
 
-    void existsByIdOrFail(long categoryId) throws DomainException;
+    Category update(Long id, CategoryFormRequest request);
+
+    void delete(Long id);
+
+    Page<Category> findAllPaginate(Pageable pageable);
+
+    Category getByIdOrFail(Long categoryId) throws CategoryNotFoundException;
+
+    void existsByIdOrFail(Long categoryId) throws DomainException;
 }

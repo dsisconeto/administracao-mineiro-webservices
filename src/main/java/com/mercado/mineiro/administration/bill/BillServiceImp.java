@@ -4,11 +4,16 @@ import com.mercado.mineiro.administration.bill.category.CategoryNotFoundExceptio
 import com.mercado.mineiro.administration.bill.category.CategoryService;
 import com.mercado.mineiro.administration.bill.document.type.DocumentTypeNotFoundException;
 import com.mercado.mineiro.administration.bill.document.type.DocumentTypeService;
-import com.mercado.mineiro.administration.common.DomainException;
+import com.mercado.mineiro.administration.bill.payment.Payment;
+import com.mercado.mineiro.administration.common.exception.DomainException;
 import com.mercado.mineiro.administration.supplier.SupplierNotFoundException;
 import com.mercado.mineiro.administration.supplier.SupplierService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Service
 public class BillServiceImp implements BillService {
@@ -34,6 +39,7 @@ public class BillServiceImp implements BillService {
         this.modelMapper = modelMapper;
     }
 
+    @Transactional
     public Bill create(BillCreateRequestDTO request) throws CategoryNotFoundException, SupplierNotFoundException, DocumentTypeNotFoundException {
 
         categoryService.existsByIdOrFail(request.getCategoryId());
@@ -69,12 +75,22 @@ public class BillServiceImp implements BillService {
     }
 
 
-    public Bill getByIdOrFail(Long billId) throws BillNotFoundException {
+    public Bill getByIdOrFail(Long billId) {
 
         var bill = billRepository.findById(billId);
 
         return bill.orElseThrow(BillNotFoundException::new);
     }
 
+
+    public Bill pay(Long billId, BigDecimal amount, LocalDate paidAt) {
+
+        var bill = billRepository.findById(billId)
+                .orElseThrow(BillNotFoundException::new);
+
+        bill.pay(new Payment(amount, paidAt));
+
+        return bill;
+    }
 
 }

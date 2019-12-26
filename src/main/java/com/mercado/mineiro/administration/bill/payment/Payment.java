@@ -26,4 +26,9 @@ public class Payment {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    public Payment(BigDecimal amount, LocalDate paidAt) {
+
+    }
+
+
 }
